@@ -6,35 +6,95 @@ import { useTheme } from "../../components/ThemeContext";
 const AdminDashboard = () => {
     const navigate = useNavigate();
     const [userProfile, setUserProfile] = useState(null);
-    const { theme } = useTheme(); // Get theme from context
+    const [totalUsers, setTotalUsers] = useState(0);
+    const [loadingUsers, setLoadingUsers] = useState(true);
+    const [visitorsOnline, setVisitorsOnline] = useState(0); // Placeholder
+    const [totalSongs, setTotalSongs] = useState(0);
+    const { theme } = useTheme();
 
     useEffect(() => {
+        const token = localStorage.getItem("token");
+        console.log("Token:", token ? "Present" : "Missing");
+
         const fetchUserProfile = async () => {
             try {
                 const response = await fetch("http://localhost:3000/api/auth/profile", {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        Authorization: `Bearer ${token}`,
                     },
                 });
 
                 if (!response.ok) {
-                    throw new Error("Failed to fetch profile");
+                    throw new Error(`Failed to fetch profile: ${response.status} ${response.statusText}`);
                 }
 
                 const data = await response.json();
                 setUserProfile(data);
             } catch (error) {
-                console.error("Error fetching user profile:", error);
+                console.error("Error fetching user profile:", error.message);
             }
         };
 
-        fetchUserProfile();
-    }, []);
+        const fetchTotalUsers = async () => {
+            try {
+                const response = await fetch("http://localhost:3000/api/auth/users", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch users: ${response.status} ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log("Users data:", data);
+                setTotalUsers(Array.isArray(data) ? data.length : 0);
+            } catch (error) {
+                console.error("Error fetching total users:", error.message);
+            } finally {
+                setLoadingUsers(false);
+            }
+        };
+
+        const fetchTotalSongs = async () => {
+            try {
+                const response = await fetch("http://localhost:3000/api/songs/getsongs", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch songs: ${response.status} ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log("Songs data:", data);
+                setTotalSongs(data.songs ? data.songs.length : data.length);
+            } catch (error) {
+                console.error("Error fetching total songs:", error.message);
+            }
+        };
+
+        if (token) {
+            fetchUserProfile();
+            fetchTotalUsers();
+            fetchTotalSongs();
+        } else {
+            console.error("No token found, redirecting to login");
+            navigate("/login");
+        }
+    }, [navigate]);
 
     return (
-        <div className="h-screen bg-gradient-to-br from-purple-100 to-blue-100 dark:from-gray-900 dark:to-gray-800 flex">
+        <div className={`h-screen bg-gradient-to-br from-purple-100 to-blue-100 dark:from-gray-900 dark:to-gray-800 flex`}>
             <AdminSidebar />
             <main className="flex-1 p-6 flex justify-center items-start mt-6">
                 <div className="bg-white bg-opacity-60 backdrop-blur-lg dark:bg-gray-800 dark:bg-opacity-80 rounded-3xl shadow-lg p-8 w-full max-w-7xl h-[85vh]">
@@ -43,56 +103,28 @@ const AdminDashboard = () => {
                         <span className="text-gray-700 dark:text-gray-300">Hello, {userProfile ? userProfile.name : "Admin"}</span>
                     </header>
 
-                    <div className="relative mt-8 h-52 w-full rounded-l-3xl overflow-hidden bg-gradient-to-r from-purple-400 to-purple-500 dark:from-indigo-900 dark:to-indigo-700 text-white shadow-lg cursor-pointer transform hover:-translate-y-1 hover:scale-105 transition-all duration-300">
-                        <div className="overflow-hidden">
-                            <img
-                                src="src/assets/images/chords.jpg"
-                                alt="Guitar and amplifier"
-                                className="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                            />
-                        </div>
-                        <div className="absolute inset-0 flex flex-col justify-center items-start p-8 bg-black bg-opacity-50">
-                            <h2 className="text-xl font-bold">Ready to add new content?</h2>
-                            <p className="mt-2">Create lessons for users to learn instruments at their own pace.</p>
-                            <button
-                                className="mt-4 py-2 px-4 rounded text-white bg-gradient-to-r from-[#99CCFF] via-[#C6B7FE] to-[#766E98] hover:from-purple-500 hover:to-purple-700 dark:hover:from-indigo-600 dark:hover:to-indigo-800 shadow-md"
-                                onClick={() => navigate("/addLesson")}
-                            >
-                                Add Quiz
-                            </button>
-                        </div>
-                    </div>
-
-                    <div className="mt-12 flex gap-8">
-                        <div
-                            className="relative h-48 w-1/2 rounded-xl overflow-hidden bg-gradient-to-r from-blue-400 to-blue-500 dark:from-blue-900 dark:to-blue-700 text-white shadow-lg cursor-pointer transform hover:-translate-y-1 hover:scale-105 transition-all duration-300"
-                            onClick={() => navigate("/addChord")}
-                        >
-                            <div className="overflow-hidden">
-                                <img
-                                    src="src/assets/images/chord.jpeg"
-                                    alt="Add chords"
-                                    className="absolute top-0 left-0 w-full h-full object-cover object-center transition-transform duration-500 hover:scale-110"
-                                />
-                            </div>
-                            <div className="absolute inset-0 flex flex-col justify-center items-start p-6 bg-black bg-opacity-50">
-                                <h2 className="text-lg font-bold">Add chords for songs</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                        {/* Total Users Card */}
+                        <div className="relative h-40 rounded-xl overflow-hidden bg-gradient-to-r from-purple-400 to-purple-500 dark:from-indigo-900 dark:to-indigo-700 text-white shadow-lg transform hover:-translate-y-1 hover:scale-105 transition-all duration-300">
+                            <div className="absolute inset-0 flex flex-col justify-center items-center p-4 bg-black bg-opacity-50">
+                                <h2 className="text-lg font-bold">Total Users</h2>
+                                <p className="text-3xl font-bold mt-2">{loadingUsers ? "Loading..." : totalUsers}</p>
                             </div>
                         </div>
 
-                        <div
-                            className="relative h-48 w-1/2 rounded-xl overflow-hidden bg-gradient-to-r from-green-400 to-green-500 dark:from-green-900 dark:to-green-700 text-white shadow-lg cursor-pointer transform hover:-translate-y-1 hover:scale-105 transition-all duration-300"
-                            onClick={() => navigate("/addPracticeSessions")}
-                        >
-                            <div className="overflow-hidden">
-                                <img
-                                    src="src/assets/images/practice.jpg"
-                                    alt="Add practice session"
-                                    className="absolute top-0 left-0 w-full h-full object-cover object-center transition-transform duration-500 hover:scale-110"
-                                />
+                        {/* Visitors Online Card */}
+                        <div className="relative h-40 rounded-xl overflow-hidden bg-gradient-to-r from-blue-400 to-blue-500 dark:from-blue-900 dark:to-blue-700 text-white shadow-lg transform hover:-translate-y-1 hover:scale-105 transition-all duration-300">
+                            <div className="absolute inset-0 flex flex-col justify-center items-center p-4 bg-black bg-opacity-50">
+                                <h2 className="text-lg font-bold">Visitors Online</h2>
+                                <p className="text-3xl font-bold mt-2">{visitorsOnline}</p>
                             </div>
-                            <div className="absolute inset-0 flex flex-col justify-center items-start p-6 bg-black bg-opacity-50">
-                                <h2 className="text-lg font-bold">Add practice sessions</h2>
+                        </div>
+
+                        {/* Total Songs Card */}
+                        <div className="relative h-40 rounded-xl overflow-hidden bg-gradient-to-r from-green-400 to-green-500 dark:from-green-900 dark:to-green-700 text-white shadow-lg transform hover:-translate-y-1 hover:scale-105 transition-all duration-300">
+                            <div className="absolute inset-0 flex flex-col justify-center items-center p-4 bg-black bg-opacity-50">
+                                <h2 className="text-lg font-bold">Total Songs</h2>
+                                <p className="text-3xl font-bold mt-2">{totalSongs}</p>
                             </div>
                         </div>
                     </div>
@@ -105,12 +137,14 @@ const AdminDashboard = () => {
                         src={`http://localhost:3000/${userProfile.profilePicture}`}
                         alt="Profile"
                         className="w-16 h-16 rounded-full border border-gray-300 dark:border-gray-600 cursor-pointer mt-4"
+                        onClick={() => navigate("/profile")}
                     />
                 ) : (
                     <img
                         src="/assets/images/default-profile.png"
                         alt="Profile"
                         className="w-16 h-16 rounded-full border border-gray-300 dark:border-gray-600 cursor-pointer mt-4"
+                        onClick={() => navigate("/profile")}
                     />
                 )}
             </aside>

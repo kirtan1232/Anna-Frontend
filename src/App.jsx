@@ -63,7 +63,7 @@ function App() {
     { path: "/tuner", element: <TunerInst /> },
     { path: "/profile", element: <Profile /> },
     { path: "/session-details/:day/:instrument", element: <SessionDetails /> },
-    { path: "/lesson-details/:day", element: <LessonDetails /> },
+    { path:"/lesson/:instrument/:day" ,element: <LessonDetails />},
     { path: "/liked-songs", element: <LikedSongs /> },
     { path: "*", element: <>Page not found</> },
   ];

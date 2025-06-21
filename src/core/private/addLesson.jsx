@@ -3,7 +3,7 @@ import AdminSidebar from "../../components/adminSidebar.jsx";
 import { useTheme } from "../../components/ThemeContext";
 
 export default function AddQuiz() {
-    const { theme } = useTheme(); // Get theme from context
+    const { theme } = useTheme();
     const [day, setDay] = useState("");
     const [quizzes, setQuizzes] = useState([]);
     const [docxFiles, setDocxFiles] = useState([]);
@@ -24,7 +24,16 @@ export default function AddQuiz() {
 
     const handleDiagramChange = (index, e) => {
         const updatedQuizzes = [...quizzes];
-        updatedQuizzes[index].chordDiagram = e.target.files[0];
+        const file = e.target.files[0];
+        if (file) {
+            updatedQuizzes[index].chordDiagram = file;
+            // Assign fileIndex based on the number of files already assigned
+            const fileIndex = quizzes.filter(q => q.chordDiagram).length;
+            updatedQuizzes[index].fileIndex = fileIndex;
+        } else {
+            updatedQuizzes[index].chordDiagram = null;
+            updatedQuizzes[index].fileIndex = null;
+        }
         setQuizzes(updatedQuizzes);
     };
 
@@ -39,6 +48,7 @@ export default function AddQuiz() {
                 {
                     question: "",
                     chordDiagram: null,
+                    fileIndex: null, // Initialize fileIndex as null
                     options: ["", "", "", ""],
                     correctAnswer: "",
                 },
@@ -55,20 +65,24 @@ export default function AddQuiz() {
         const quizData = {
             day,
             instrument,
-            quizzes: quizzes.map((quiz) => ({
+            quizzes: quizzes.map((quiz, index) => ({
                 question: quiz.question,
                 options: quiz.options,
                 correctAnswer: quiz.correctAnswer,
-                chordDiagram: quiz.chordDiagram ? quiz.chordDiagram.name : null,
+                fileIndex: quiz.fileIndex, // Include fileIndex instead of chordDiagram
             })),
         };
 
         formData.append("quizData", JSON.stringify(quizData));
 
-        quizzes.forEach((quiz) => {
-            if (quiz.chordDiagram) {
-                formData.append("chordDiagrams", quiz.chordDiagram);
-            }
+        // Append chordDiagrams in the order of fileIndex
+        const chordDiagrams = quizzes
+            .filter(quiz => quiz.chordDiagram && quiz.fileIndex != null)
+            .sort((a, b) => a.fileIndex - b.fileIndex) // Ensure files are appended in fileIndex order
+            .map(quiz => quiz.chordDiagram);
+
+        chordDiagrams.forEach((file, index) => {
+            formData.append("chordDiagrams", file);
         });
 
         docxFiles.forEach((file) => {

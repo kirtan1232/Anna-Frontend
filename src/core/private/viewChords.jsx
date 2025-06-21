@@ -4,7 +4,7 @@ import AdminSidebar from "../../components/adminSidebar.jsx";
 import { useTheme } from "../../components/ThemeContext";
 
 const ViewChords = () => {
-    const { theme } = useTheme(); // Get theme from context
+    const { theme } = useTheme();
     const [songs, setSongs] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -13,9 +13,7 @@ const ViewChords = () => {
     const [editFormData, setEditFormData] = useState({
         songName: "",
         selectedInstrument: "",
-        lyrics: [{ section: "", lyrics: "", parsedDocxFile: [] }],
-        chordDiagrams: [],
-        docxFiles: []
+        chordDiagrams: []
     });
 
     useEffect(() => {
@@ -42,43 +40,17 @@ const ViewChords = () => {
         setEditFormData({
             songName: song.songName,
             selectedInstrument: song.selectedInstrument,
-            lyrics: song.lyrics.map(lyric => ({
-                section: lyric.section || "",
-                lyrics: lyric.lyrics || "",
-                parsedDocxFile: lyric.parsedDocxFile || []
-            })),
-            chordDiagrams: [],
-            docxFiles: []
+            chordDiagrams: []
         });
     };
 
-    const handleFormChange = (e, index, field) => {
-        if (field === "songName" || field === "selectedInstrument") {
-            setEditFormData({ ...editFormData, [field]: e.target.value });
-        } else {
-            const updatedLyrics = [...editFormData.lyrics];
-            updatedLyrics[index][field] = e.target.value;
-            setEditFormData({ ...editFormData, lyrics: updatedLyrics });
-        }
+    const handleFormChange = (e, field) => {
+        setEditFormData({ ...editFormData, [field]: e.target.value });
     };
 
-    const handleFileUpload = (e, field) => {
+    const handleFileUpload = (e) => {
         const files = Array.from(e.target.files);
-        setEditFormData({ ...editFormData, [field]: files });
-    };
-
-    const addLyricSection = () => {
-        setEditFormData({
-            ...editFormData,
-            lyrics: [...editFormData.lyrics, { section: "", lyrics: "", parsedDocxFile: [] }]
-        });
-    };
-
-    const removeLyricSection = (index) => {
-        setEditFormData({
-            ...editFormData,
-            lyrics: editFormData.lyrics.filter((_, i) => i !== index)
-        });
+        setEditFormData({ ...editFormData, chordDiagrams: files });
     };
 
     const handleEditSubmit = async (e) => {
@@ -92,16 +64,14 @@ const ViewChords = () => {
             alert("Song name and instrument are required.");
             return;
         }
+
         const formData = new FormData();
         formData.append("songName", editFormData.songName);
         formData.append("selectedInstrument", editFormData.selectedInstrument);
-        formData.append("lyrics", JSON.stringify(editFormData.lyrics));
         editFormData.chordDiagrams.forEach(file => {
             formData.append("chordDiagrams", file);
         });
-        editFormData.docxFiles.forEach(file => {
-            formData.append("docxFiles", file);
-        });
+
         try {
             const response = await axios.put(`http://localhost:3000/api/songs/${editSong._id}`, formData, {
                 headers: {
@@ -214,11 +184,12 @@ const ViewChords = () => {
                                                 song.lyrics.map((lyric, idx) => (
                                                     <li key={idx} className="text-gray-700 dark:text-gray-300">
                                                         <strong>{lyric.section || "Unknown Section"}:</strong>{" "}
-                                                        {lyric.lyrics || "No lyrics available"}
-                                                        {lyric.parsedDocxFile && lyric.parsedDocxFile.length > 0 && (
+                                                        {lyric.parsedDocxFile && lyric.parsedDocxFile.length > 0 ? (
                                                             <p className="text-gray-600 dark:text-gray-400 mt-1">
-                                                                Parsed DOCX: {lyric.parsedDocxFile.join(", ")}
+                                                                {lyric.parsedDocxFile.join(", ")}
                                                             </p>
+                                                        ) : (
+                                                            lyric.lyrics || "No lyrics available"
                                                         )}
                                                     </li>
                                                 ))
@@ -245,7 +216,7 @@ const ViewChords = () => {
                                 <input
                                     type="text"
                                     value={editFormData.songName}
-                                    onChange={(e) => handleFormChange(e, null, "songName")}
+                                    onChange={(e) => handleFormChange(e, "songName")}
                                     className="w-full p-2 border rounded-lg dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
                                     placeholder="Enter song title"
                                 />
@@ -254,7 +225,7 @@ const ViewChords = () => {
                                 <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Select Instrument</label>
                                 <select
                                     value={editFormData.selectedInstrument}
-                                    onChange={(e) => handleFormChange(e, null, "selectedInstrument")}
+                                    onChange={(e) => handleFormChange(e, "selectedInstrument")}
                                     className="w-full p-2 border rounded-lg dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
                                 >
                                     <option value="guitar">Guitar</option>
@@ -268,57 +239,10 @@ const ViewChords = () => {
                                     type="file"
                                     accept="image/*"
                                     multiple
-                                    onChange={(e) => handleFileUpload(e, "chordDiagrams")}
+                                    onChange={handleFileUpload}
                                     className="w-full p-2 text-gray-700 dark:text-gray-300"
                                 />
                             </div>
-                            <div>
-                                <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Upload DOCX File(s)</label>
-                                <input
-                                    type="file"
-                                    accept=".docx"
-                                    multiple
-                                    onChange={(e) => handleFileUpload(e, "docxFiles")}
-                                    className="w-full p-2 text-gray-700 dark:text-gray-300"
-                                />
-                            </div>
-                            {editFormData.lyrics.map((lyric, index) => (
-                                <div key={index} className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                                    <div>
-                                        <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Section</label>
-                                        <input
-                                            type="text"
-                                            value={lyric.section}
-                                            onChange={(e) => handleFormChange(e, index, "section")}
-                                            className="w-full p-2 border rounded-lg dark:bg-gray-600 dark:text-gray-300 dark:border-gray-600"
-                                            placeholder="Enter section name"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Lyrics</label>
-                                        <textarea
-                                            value={lyric.lyrics}
-                                            onChange={(e) => handleFormChange(e, index, "lyrics")}
-                                            className="w-full p-2 border rounded-lg dark:bg-gray-600 dark:text-gray-300 dark:border-gray-600"
-                                            placeholder="Enter lyrics"
-                                        />
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => removeLyricSection(index)}
-                                        className="mt-2 px-3 py-1 bg-red-500 dark:bg-red-600 text-white rounded-lg"
-                                    >
-                                        Remove Section
-                                    </button>
-                                </div>
-                            ))}
-                            <button
-                                type="button"
-                                onClick={addLyricSection}
-                                className="px-3 py-1 bg-green-500 dark:bg-green-600 text-white rounded-lg"
-                            >
-                                Add Lyric Section
-                            </button>
                             <div className="flex justify-end space-x-2">
                                 <button
                                     type="button"

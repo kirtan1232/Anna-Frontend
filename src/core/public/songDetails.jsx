@@ -89,9 +89,9 @@ const SongDetails = () => {
     if (loading) return <div className="text-gray-600 dark:text-gray-400">Loading...</div>;
     if (!song) return <div className="text-gray-600 dark:text-gray-400">Song not found.</div>;
 
-    const renderLyrics = (lyrics) => (
+    const renderLyrics = (lines) => (
         <pre style={{ fontFamily: 'monospace', whiteSpace: 'pre-wrap', fontSize: `${fontSize}px`, color: theme === 'light' ? '#1F2937' : '#E5E7EB' }}>
-            {lyrics}
+            {Array.isArray(lines) ? lines.join('\n') : lines}
         </pre>
     );
 
@@ -129,16 +129,14 @@ const SongDetails = () => {
                         {song.lyrics && song.lyrics.length > 0 ? (
                             song.lyrics.map((lyric, index) => (
                                 <div key={index} className="mt-2">
-                                    <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">{lyric.section}</h3>
+                                    <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">{lyric.section || "Unknown Section"}</h3>
                                     <div>
-                                        {Array.isArray(lyric.parsedDocxFile) && lyric.parsedDocxFile.length > 0 ? (
-                                            lyric.parsedDocxFile.map((doc, docIndex) => (
-                                                <div key={docIndex} className="mt-1 bg-gray-200 dark:bg-gray-600 p-4 rounded-lg">
-                                                    {renderLyrics(doc.lyrics)}
-                                                </div>
-                                            ))
+                                        {lyric.parsedDocxFile && lyric.parsedDocxFile.length > 0 ? (
+                                            <div className="mt-1 bg-gray-200 dark:bg-gray-600 p-4 rounded-lg">
+                                                {renderLyrics(lyric.parsedDocxFile)}
+                                            </div>
                                         ) : (
-                                            <p className="text-gray-600 dark:text-gray-400">No lyrics available.</p>
+                                            <p className="text-gray-600 dark:text-gray-400">{lyric.lyrics || "No lyrics available."}</p>
                                         )}
                                     </div>
                                 </div>
