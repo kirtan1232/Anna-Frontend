@@ -55,7 +55,7 @@ const LoginPage = ({ setIsAuthenticated, setIsAdmin }) => {
             delete axios.defaults.headers.common['Authorization'];
 
             const response = await axios.post(
-                `${process.env.REACT_APP_API_URL}/api/auth/login`,
+                "http://localhost:3000/api/auth/login",
                 { email, password }
             );
 
