@@ -152,19 +152,17 @@ export default function SessionDetails() {
   };
 
   return (
-    <div
-      className={`h-screen flex flex-col ${
-        theme === "light" ? "bg-gradient-to-br from-purple-100 to-blue-100" : "bg-gradient-to-br from-gray-900 to-gray-800"
-      } fallback:bg-gray-900`}
-    >
+    <div className={`bg-gradient-to-br min-h-screen flex flex-col ${theme === 'light' ? 'from-purple-100 to-blue-100' : 'from-gray-900 to-gray-800'} fallback:bg-gray-900`}>
       <div className="relative flex flex-1">
         <Sidebar />
-        <main className="flex-1 p-12 flex flex-col items-start ml-4">
-          <div className="bg-white bg-opacity-60 backdrop-blur-lg dark:bg-gray-800 dark:bg-opacity-80 rounded-3xl shadow-lg p-8 w-full max-w-7xl h-[85vh]">
-            <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">
-              Sessions for {day} - {instrument}
-            </h2>
-            <div className="overflow-y-auto flex-grow p-2 space-y-4">
+        <main className="flex-1 p-6 flex justify-center items-start mt-4">
+          <div className="bg-white bg-opacity-60 backdrop-blur-lg dark:bg-gray-800 dark:bg-opacity-80 rounded-3xl shadow-lg p-8 w-full max-w-7xl h-[85vh] overflow-y-auto">
+            <header className="mb-6">
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+                Sessions for {day} - {instrument}
+              </h2>
+            </header>
+            <div className="space-y-4">
               {sessions.length === 0 ? (
                 <p className="text-center text-gray-500 dark:text-gray-400">No sessions available.</p>
               ) : (
@@ -221,7 +219,7 @@ export default function SessionDetails() {
             </div>
           </div>
         </main>
-        <div className="absolute top-4 right-4">
+        <div className="absolute top-4 right-4 bg-white bg-opacity-60 backdrop-blur-lg dark:bg-gray-800 dark:bg-opacity-80 rounded-full p-2">
           {userProfile && userProfile.profilePicture ? (
             <img
               src={`http://localhost:3000/${userProfile.profilePicture}`}
@@ -239,9 +237,7 @@ export default function SessionDetails() {
           )}
         </div>
       </div>
-      <div className={`w-full ${theme === "light" ? "bg-white" : "bg-gray-900 text-gray-200"}`}>
-        <Footer />
-      </div>
+      <Footer />
     </div>
   );
 }

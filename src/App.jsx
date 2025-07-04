@@ -1,13 +1,13 @@
 import { Suspense, useEffect, useState } from "react";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 import ProtectedRoute from "./components/protectedRoute.jsx";
 import AddChord from "./core/private/addChord.jsx";
 import AddLesson from "./core/private/addLesson.jsx";
 import AddPracticeSession from "./core/private/addPracticeSessions.jsx";
 import AdminDashboard from "./core/private/adminDashboard.jsx";
-import ViewChords from "./core/private/viewChords.jsx"; // New component
-import ViewLessons from "./core/private/viewLessons.jsx"; // New component
-import ViewPracticeSessions from "./core/private/viewPracticeSessions.jsx"; // New component
+import ViewChords from "./core/private/viewChords.jsx";
+import ViewLessons from "./core/private/viewLessons.jsx";
+import ViewPracticeSessions from "./core/private/viewPracticeSessions.jsx";
 import ChordAndLyricPage from "./core/public/chordAndLyric.jsx";
 import Dashboard from "./core/public/dashboard.jsx";
 import ForgetPassword from "./core/public/forgetPassword.jsx";
@@ -22,6 +22,9 @@ import ResetPasswordPage from "./core/public/resetPassword.jsx";
 import SessionDetails from "./core/public/sessionDetails.jsx";
 import SongDetails from "./core/public/songDetails.jsx";
 import TunerInst from "./core/public/tunerInst.jsx";
+import Success from "./components/success.jsx";
+import Payment from "./core/public/payment.jsx";
+import './i18n.js'; // Import i18n for translations
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -35,14 +38,16 @@ function App() {
   };
 
   useEffect(() => {
+    // Optionally clear the token to force login
+    // localStorage.removeItem("token");
+    // setIsAuthenticated(false); // Force unauthenticated state
     checkAuth();
     window.addEventListener("storage", checkAuth);
     return () => window.removeEventListener("storage", checkAuth);
   }, []);
 
-  // Public Routes
   const publicRoutes = [
-    { path: "/", element: <RegisterPage /> },
+    { path: "/", element: <Navigate to="/login" replace /> }, // Redirect root to /login
     {
       path: "/login",
       element: (
@@ -53,7 +58,7 @@ function App() {
       ),
     },
     { path: "/register", element: <RegisterPage /> },
-    { path: "/dashboard", element: <Dashboard /> },
+    { path: "/dashboard", element: <Dashboard isAuthenticated={isAuthenticated} /> },
     { path: "/forgetPassword", element: <ForgetPassword /> },
     { path: "/resetPassword", element: <ResetPasswordPage /> },
     { path: "/lesson", element: <Lesson /> },
@@ -63,12 +68,13 @@ function App() {
     { path: "/tuner", element: <TunerInst /> },
     { path: "/profile", element: <Profile /> },
     { path: "/session-details/:day/:instrument", element: <SessionDetails /> },
-    { path:"/lesson/:instrument/:day" ,element: <LessonDetails />},
+    { path: "/lesson/:instrument/:day", element: <LessonDetails /> },
     { path: "/liked-songs", element: <LikedSongs /> },
+    { path: "/success", element: <Success /> },
+    { path: "/payment", element: <Payment /> },
     { path: "*", element: <>Page not found</> },
   ];
 
-  // Private/Admin Routes
   const privateRoutes = [
     {
       path: "/admindash",

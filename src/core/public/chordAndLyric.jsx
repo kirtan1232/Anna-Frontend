@@ -66,7 +66,7 @@ export default function ChordAndLyric() {
                 const data = await response.json();
                 setLikedSongs(data.songIds.map(song => song._id.toString()));
             } catch (error) {
-               
+                alert("Error fetching liked songs: " + error.message);
             }
         };
 
@@ -74,7 +74,9 @@ export default function ChordAndLyric() {
         fetchLikedSongs();
     }, []);
 
-    const handleLikeSong = async (songId) => {
+    const handleLikeSong = async (songId, e) => {
+        e.preventDefault();
+        e.stopPropagation();
         try {
             const response = await fetch(`http://localhost:3000/api/favorites/songs`, {
                 method: "POST",
@@ -101,9 +103,11 @@ export default function ChordAndLyric() {
         <div className={`bg-gradient-to-br min-h-screen flex flex-col ${theme === 'light' ? 'from-purple-100 to-blue-100' : 'from-gray-900 to-gray-800'}`}>
             <div className="relative flex flex-1">
                 <Sidebar />
-                <main className="flex-1 p-12 flex flex-col items-start ml-4">
-                    <div className="bg-white bg-opacity-60 backdrop-blur-lg dark:bg-gray-800 dark:bg-opacity-80 rounded-3xl shadow-lg p-8 w-full max-w-7xl h-[85vh]">
-                        <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">Available {selectedCategory} Chords</h2>
+                <main className="flex-1 p-6 flex justify-center items-start mt-4">
+                    <div className="bg-white bg-opacity-60 backdrop-blur-lg dark:bg-gray-800 dark:bg-opacity-80 rounded-3xl shadow-lg p-8 w-full max-w-7xl h-[85vh] overflow-y-auto">
+                        <header className="mb-6">
+                            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Available {selectedCategory} Chords</h2>
+                        </header>
                         <div className="flex justify-start space-x-8 mb-6">
                             {["Ukulele", "Guitar", "Piano"].map((category) => (
                                 <span
@@ -124,29 +128,27 @@ export default function ChordAndLyric() {
                                 <p className="text-center text-gray-500 dark:text-gray-400">No lessons available in this category.</p>
                             ) : (
                                 songs.map((song) => (
-                                    <div
+                                    <Link
+                                        to={`/song/${song._id}`}
                                         key={song._id}
                                         className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg shadow-md hover:bg-gray-200 dark:hover:bg-gray-600 flex justify-between items-center"
                                     >
-                                        <Link to={`/song/${song._id}`} className="text-xl font-semibold text-gray-800 dark:text-gray-200 cursor-pointer">
+                                        <span className="text-xl font-semibold text-gray-800 dark:text-gray-200 cursor-pointer">
                                             {song.songName}
-                                        </Link>
+                                        </span>
                                         <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleLikeSong(song._id.toString());
-                                            }}
+                                            onClick={(e) => handleLikeSong(song._id.toString(), e)}
                                             className="text-red-500 dark:text-red-400 ml-4"
                                         >
                                             {likedSongs.includes(song._id.toString()) ? <FaHeart /> : <FaRegHeart />}
                                         </button>
-                                    </div>
+                                    </Link>
                                 ))
                             )}
                         </div>
                     </div>
                 </main>
-                <div className="absolute top-4 right-4">
+                <div className="absolute top-4 right-4 bg-white bg-opacity-60 backdrop-blur-lg dark:bg-gray-800 dark:bg-opacity-80 rounded-full p-2">
                     {userProfile && userProfile.profilePicture ? (
                         <img
                             src={`http://localhost:3000/${userProfile.profilePicture}`}

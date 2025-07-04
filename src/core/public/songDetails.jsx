@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Sidebar from "../../components/sidebar.jsx";
 import { useTheme } from "../../components/ThemeContext";
+import Footer from "../../components/footer.jsx";
 
 const SongDetails = () => {
     const { theme } = useTheme();
@@ -96,107 +97,111 @@ const SongDetails = () => {
     );
 
     return (
-        <div className={`h-screen flex ${theme === 'light' ? 'bg-gradient-to-br from-purple-100 to-blue-100' : 'bg-gradient-to-br from-gray-900 to-gray-800'}`}>
-            <Sidebar />
-            <main className="flex-1 p-12 flex flex-col items-start ml-4">
-                <div className="bg-white bg-opacity-60 backdrop-blur-lg dark:bg-gray-800 dark:bg-opacity-80 rounded-3xl shadow-lg p-8 w-full max-w-7xl h-[85vh] flex flex-col relative">
-                    <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200 uppercase tracking-wider text-center">
-                        Song - {song.songName}
-                    </h1>
-                    <p className="text-lg text-gray-700 dark:text-gray-300 mt-4"><strong>Instrument:</strong> {song.selectedInstrument}</p>
-
-                    <h2 className="text-xl font-semibold mt-4 text-gray-800 dark:text-gray-200">Chord Diagrams:</h2>
-                    <div className="flex flex-wrap gap-4 mt-2">
-                        {song.chordDiagrams && song.chordDiagrams.length > 0 ? (
-                            song.chordDiagrams.map((chord, index) => (
-                                <img
-                                    key={index}
-                                    src={`http://localhost:3000/${chord}`}
-                                    alt={`Chord Diagram ${index + 1}`}
-                                    className="w-24 h-auto rounded shadow-md"
-                                    onError={(e) => {
-                                        e.target.src = "/assets/images/placeholder.png";
-                                    }}
-                                />
-                            ))
-                        ) : (
-                            <p className="text-gray-600 dark:text-gray-400">No chord diagrams available.</p>
-                        )}
-                    </div>
-
-                    <h2 className="text-xl font-semibold mt-4 text-gray-800 dark:text-gray-200">Lyrics:</h2>
-                    <div ref={lyricsRef} className="flex-1 overflow-y-auto p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                        {song.lyrics && song.lyrics.length > 0 ? (
-                            song.lyrics.map((lyric, index) => (
-                                <div key={index} className="mt-2">
-                                    <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">{lyric.section || "Unknown Section"}</h3>
-                                    <div>
-                                        {lyric.parsedDocxFile && lyric.parsedDocxFile.length > 0 ? (
-                                            <div className="mt-1 bg-gray-200 dark:bg-gray-600 p-4 rounded-lg">
-                                                {renderLyrics(lyric.parsedDocxFile)}
-                                            </div>
-                                        ) : (
-                                            <p className="text-gray-600 dark:text-gray-400">{lyric.lyrics || "No lyrics available."}</p>
-                                        )}
+        <div className={`bg-gradient-to-br min-h-screen flex flex-col ${theme === 'light' ? 'from-purple-100 to-blue-100' : 'from-gray-900 to-gray-800'}`}>
+            <div className="relative flex flex-1">
+                <Sidebar />
+                <main className="flex-1 p-6 flex justify-center items-start mt-4">
+                    <div className="bg-white bg-opacity-60 backdrop-blur-lg dark:bg-gray-800 dark:bg-opacity-80 rounded-3xl shadow-lg p-8 w-full max-w-7xl h-[85vh] flex flex-col relative overflow-y-auto">
+                        <header className="mb-6">
+                            <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200 uppercase tracking-wider text-center">
+                                Song - {song.songName}
+                            </h1>
+                        </header>
+                        <p className="text-lg text-gray-700 dark:text-gray-300 mt-4"><strong>Instrument:</strong> {song.selectedInstrument}</p>
+                        <h2 className="text-xl font-semibold mt-4 text-gray-800 dark:text-gray-200">Chord Diagrams:</h2>
+                        <div className="flex flex-wrap gap-4 mt-2">
+                            {song.chordDiagrams && song.chordDiagrams.length > 0 ? (
+                                song.chordDiagrams.map((chord, index) => (
+                                    <img
+                                        key={index}
+                                        src={`http://localhost:3000/${chord}`}
+                                        alt={`Chord Diagram ${index + 1}`}
+                                        className={`rounded shadow-md ${
+                                            song.chordDiagrams.length === 1
+                                                ? 'w-full max-w-md h-auto'
+                                                : 'w-24 h-auto'
+                                        }`}
+                                        onError={(e) => {
+                                            e.target.src = "/assets/images/placeholder.png";
+                                        }}
+                                    />
+                                ))
+                            ) : (
+                                <p className="text-gray-600 dark:text-gray-400">No chord diagrams available.</p>
+                            )}
+                        </div>
+                        <h2 className="text-xl font-semibold mt-4 text-gray-800 dark:text-gray-200">Lyrics:</h2>
+                        <div ref={lyricsRef} className="flex-1 overflow-y-auto p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                            {song.lyrics && song.lyrics.length > 0 ? (
+                                song.lyrics.map((lyric, index) => (
+                                    <div key={index} className="mt-2">
+                                        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">{lyric.section || "Unknown Section"}</h3>
+                                        <div>
+                                            {lyric.parsedDocxFile && lyric.parsedDocxFile.length > 0 ? (
+                                                <div className="mt-1 bg-gray-200 dark:bg-gray-600 p-4 rounded-lg">
+                                                    {renderLyrics(lyric.parsedDocxFile)}
+                                                </div>
+                                            ) : (
+                                                <p className="text-gray-600 dark:text-gray-400">{lyric.lyrics || "No lyrics available."}</p>
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
-                            ))
-                        ) : (
-                            <p className="text-gray-600 dark:text-gray-400">No lyrics available.</p>
-                        )}
+                                ))
+                            ) : (
+                                <p className="text-gray-600 dark:text-gray-400">No lyrics available.</p>
+                            )}
+                        </div>
+                        <div className="flex justify-between items-center mt-3 bg-white dark:bg-gray-800 p-1 rounded-lg shadow-md w-full">
+                            <div className="flex items-center space-x-4 flex-1 justify-center">
+                                <button onClick={() => setFontSize(fontSize - 1)}
+                                        className="bg-gray-200 dark:bg-gray-600 px-3 py-2 rounded-md text-gray-800 dark:text-gray-200">-1
+                                </button>
+                                <span className="text-gray-700 dark:text-gray-300">{fontSize}px</span>
+                                <button onClick={() => setFontSize(fontSize + 1)}
+                                        className="bg-gray-200 dark:bg-gray-600 px-3 py-2 rounded-md text-gray-800 dark:text-gray-200">+1
+                                </button>
+                            </div>
+                            <div className="flex-1 flex justify-center">
+                                <button
+                                    onClick={() => setAutoScroll(!autoScroll)}
+                                    className={`px-4 py-2 rounded-md text-white ${autoScroll ? "bg-red-500 dark:bg-red-600" : "bg-blue-400 dark:bg-blue-600"}`}
+                                >
+                                    {autoScroll ? "Stop Scroll" : "Auto Scroll"}
+                                </button>
+                            </div>
+                            <div className="flex items-center space-x-3 flex-1 justify-center">
+                                <span className="text-gray-700 dark:text-gray-300">Speed:</span>
+                                <input
+                                    type="range"
+                                    min="1"
+                                    max="10"
+                                    value={scrollSpeed}
+                                    onChange={(e) => setScrollSpeed(Number(e.target.value))}
+                                    className="cursor-pointer"
+                                />
+                            </div>
+                        </div>
                     </div>
-                </div>
-
-                <div className="flex justify-between items-center mt-3 bg-white dark:bg-gray-800 p-1 rounded-lg shadow-md ml-56 w-[50%]">
-                    <div className="flex items-center space-x-4 flex-1 justify-center">
-                        <button onClick={() => setFontSize(fontSize - 1)}
-                                className="bg-gray-200 dark:bg-gray-600 px-3 py-2 rounded-md text-gray-800 dark:text-gray-200">-1
-                        </button>
-                        <span className="text-gray-700 dark:text-gray-300">{fontSize}px</span>
-                        <button onClick={() => setFontSize(fontSize + 1)}
-                                className="bg-gray-200 dark:bg-gray-600 px-3 py-2 rounded-md text-gray-800 dark:text-gray-200">+1
-                        </button>
-                    </div>
-
-                    <div className="flex-1 flex justify-center">
-                        <button
-                            onClick={() => setAutoScroll(!autoScroll)}
-                            className={`px-4 py-2 rounded-md text-white ${autoScroll ? "bg-red-500 dark:bg-red-600" : "bg-blue-400 dark:bg-blue-600"}`}
-                        >
-                            {autoScroll ? "Stop Scroll" : "Auto Scroll"}
-                        </button>
-                    </div>
-
-                    <div className="flex items-center space-x-3 flex-1 justify-center">
-                        <span className="text-gray-700 dark:text-gray-300">Speed:</span>
-                        <input
-                            type="range"
-                            min="1"
-                            max="10"
-                            value={scrollSpeed}
-                            onChange={(e) => setScrollSpeed(Number(e.target.value))}
-                            className="cursor-pointer"
+                </main>
+                <div className="absolute top-4 right-4 bg-white bg-opacity-60 backdrop-blur-lg dark:bg-gray-800 dark:bg-opacity-80 rounded-full p-2">
+                    {userProfile && userProfile.profilePicture ? (
+                        <img
+                            src={`http://localhost:3000/${userProfile.profilePicture}`}
+                            alt="Profile"
+                            className="w-16 h-16 rounded-full border border-gray-300 dark:border-gray-600 cursor-pointer"
+                            onClick={() => navigate("/profile")}
                         />
-                    </div>
+                    ) : (
+                        <img
+                            src="src/assets/images/profile.png"
+                            alt="Profile"
+                            className="w-16 h-16 rounded-full border border-gray-300 dark:border-gray-600 cursor-pointer"
+                            onClick={() => navigate("/profile")}
+                        />
+                    )}
                 </div>
-            </main>
-            <aside className="w-36 bg-white bg-opacity-10 backdrop-blur-lg dark:bg-gray-900 dark:bg-opacity-50 p-2 flex flex-col items-center">
-                {userProfile && userProfile.profilePicture ? (
-                    <img
-                        src={`http://localhost:3000/${userProfile.profilePicture}`}
-                        alt="Profile"
-                        className="w-16 h-16 rounded-full border border-gray-300 dark:border-gray-600 cursor-pointer mt-4"
-                        onClick={() => navigate("/profile")}
-                    />
-                ) : (
-                    <img
-                        src="src/assets/images/profile.png"
-                        alt="Profile"
-                        className="w-16 h-16 rounded-full border border-gray-300 dark:border-gray-600 cursor-pointer mt-4"
-                        onClick={() => navigate("/profile")}
-                    />
-                )}
-            </aside>
+            </div>
+            <Footer />
         </div>
     );
 };

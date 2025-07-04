@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import logoImage from "../../assets/images/logo.png";
-import bgVideo from "../../assets/videos/music.mp4";
 
 const RegisterPage = () => {
     const [name, setName] = useState("");
@@ -90,20 +89,7 @@ const RegisterPage = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center relative">
-            {/* Background Video */}
-            <video
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="absolute top-0 left-0 w-full h-full object-cover z-0"
-            >
-                <source src={bgVideo} type="video/mp4" />
-                Your browser does not support the video tag.
-            </video>
-            {/* Overlay to maintain visibility of content */}
-            <div className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 z-10"></div>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 to-blue-100 dark:from-gray-900 dark:to-gray-800">
             {/* Content */}
             <div className="relative bg-white bg-opacity-90 rounded-3xl shadow-md flex w-full max-w-5xl h-[490px] overflow-hidden z-20">
                 {/* Left Section - Sign In Prompt */}
