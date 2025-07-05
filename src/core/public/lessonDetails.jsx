@@ -85,7 +85,6 @@ export default function LessonDetails() {
     setIsCorrect(correct);
     setFeedbackMessage(correct ? "Correct!" : "Incorrect answer!");
 
-    // Play sound based on correctness
     if (correct) {
       correctSound.play().catch((error) => console.error("Error playing correct sound:", error));
     } else {
@@ -149,7 +148,6 @@ export default function LessonDetails() {
         throw new Error("Failed to mark lesson as completed");
       }
 
-      // Show GIF and play completed sound
       setShowCompletionGif(true);
       completedSound.play().catch((error) => console.error("Error playing completed sound:", error));
       
@@ -158,7 +156,6 @@ export default function LessonDetails() {
         autoClose: 1500,
       });
 
-      // Hide GIF after 3 seconds
       setTimeout(() => {
         setShowCompletionGif(false);
         navigate("/lesson");
@@ -172,96 +169,128 @@ export default function LessonDetails() {
   };
 
   return (
-    <div className={`bg-gradient-to-br min-h-screen flex flex-col ${theme === 'light' ? 'from-purple-100 to-blue-100' : 'from-gray-900 to-gray-800'}`}>
+    <div
+      className={`bg-gradient-to-br min-h-screen flex flex-col ${
+        theme === "light" ? "from-purple-100 to-blue-100" : "from-gray-900 to-gray-800"
+      }`}
+    >
       <div className="relative flex flex-1">
         <Sidebar />
         <main className="flex-1 p-6 flex justify-center items-start mt-4">
-          <div className="bg-white bg-opacity-60 backdrop-blur-lg dark:bg-gray-800 dark:bg-opacity-80 rounded-3xl shadow-lg p-8 w-full max-w-7xl">
+          <div className="bg-white bg-opacity-60 backdrop-blur-lg dark:bg-gray-800 dark:bg-opacity-80 rounded-3xl shadow-lg p-8 w-full max-w-7xl h-[85vh]">
             {quizzes.length > 0 ? (
               <div className="flex flex-col h-full">
                 <header className="mb-6">
-                  <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">
+                  <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-200">
                     Lesson for {day} ({instrument.charAt(0).toUpperCase() + instrument.slice(1)})
                   </h2>
                 </header>
-                <h3 className="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-300">
-                  Quiz {currentIndex + 1}: {quizzes[currentIndex].question}
-                </h3>
-                <div className="flex justify-center gap-4 mt-2">
-                  {quizzes[currentIndex].chordDiagram ? (
-                    <img
-                      src={`http://localhost:3000/uploads/${quizzes[currentIndex].chordDiagram}`}
-                      alt="Chord Diagram"
-                      className="w-64 h-64 object-contain rounded shadow-md mx-auto"
-                      onError={(e) => {
-                        console.error("Error loading image:", e.target.src);
-                        e.target.src = "/assets/images/placeholder.png";
-                      }}
-                    />
-                  ) : (
-                    <p className="text-gray-500 dark:text-gray-400 mb-4 text-center">No chord diagram available.</p>
-                  )}
-                </div>
-                <ul className="space-y-2 mt-4">
-                  {quizzes[currentIndex].options.map((option, i) => {
-                    const selectedAnswer = selectedAnswers[currentIndex];
-                    const isSelected = selectedAnswer?.answer === option;
-                    const isCorrectOption = selectedAnswer?.correct && isSelected;
-                    const isIncorrectOption = selectedAnswer && !selectedAnswer.correct && isSelected;
-                    return (
-                      <li
-                        key={i}
-                        onClick={() => handleOptionClick(option, quizzes[currentIndex].correctAnswer)}
-                        className={`p-2 rounded-md cursor-pointer transition-all duration-150 
-                          ${
-                            isCorrectOption
-                              ? "bg-green-500 opacity-70 text-white dark:bg-green-600"
-                              : isIncorrectOption
-                              ? "bg-red-500 opacity-70 text-white dark:bg-red-600"
-                              : "bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
+                
+                <div className="flex flex-col lg:flex-row gap-8 flex-grow overflow-y-auto">
+                  {/* Left side - Image */}
+                  <div className="flex-1 flex items-center justify-center p-4">
+                    {quizzes[currentIndex].chordDiagram ? (
+                      <img
+                        src={`http://localhost:3000/uploads/${quizzes[currentIndex].chordDiagram}`}
+                        alt="Quiz Diagram"
+                        className="w-full h-full max-h-[500px] object-contain rounded-lg shadow-md"
+                        onError={(e) => {
+                          console.error("Error loading image:", e.target.src);
+                          e.target.src = "/assets/images/placeholder.png";
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full max-h-[500px] bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                        <p className="text-xl text-gray-500 dark:text-gray-400">No image available</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Right side - Question and options */}
+                  <div className="flex-1 flex flex-col">
+                    <div className="mb-4">
+                      <span className="text-lg font-medium text-gray-600 dark:text-gray-400">
+                        Question {currentIndex + 1} of {quizzes.length}
+                      </span>
+                      <h3 className="text-2xl font-semibold mt-4 mb-6 text-gray-800 dark:text-gray-200">
+                        {quizzes[currentIndex].question}
+                      </h3>
+
+                      <ul className="space-y-6">
+                        {quizzes[currentIndex].options.map((option, i) => {
+                          const selectedAnswer = selectedAnswers[currentIndex];
+                          const isSelected = selectedAnswer?.answer === option;
+                          const isCorrectOption = selectedAnswer?.correct && isSelected;
+                          const isIncorrectOption = selectedAnswer && !selectedAnswer.correct && isSelected;
+                          return (
+                            <li
+                              key={i}
+                              onClick={() => handleOptionClick(option, quizzes[currentIndex].correctAnswer)}
+                              className={`p-5 rounded-lg cursor-pointer transition-all duration-150 border text-xl
+                                ${
+                                  isCorrectOption
+                                    ? "bg-green-100 border-green-500 text-green-800 dark:bg-green-900 dark:border-green-600 dark:text-green-200"
+                                    : isIncorrectOption
+                                    ? "bg-red-100 border-red-500 text-red-800 dark:bg-red-900 dark:border-red-600 dark:text-red-200"
+                                    : "bg-gray-50 border-gray-300 hover:bg-gray-100 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600"
+                                }`}
+                            >
+                              <span className="font-bold mr-3">{String.fromCharCode(65 + i)}:</span>
+                              {option}
+                            </li>
+                          );
+                        })}
+                      </ul>
+
+                      {feedbackMessage && (
+                        <p
+                          className={`text-xl font-semibold mt-6 ${
+                            isCorrect ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
                           }`}
+                        >
+                          {feedbackMessage}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Navigation buttons */}
+                    <div className="flex justify-between items-center mt-auto pt-6">
+                      <button
+                        onClick={prevQuiz}
+                        disabled={currentIndex === 0}
+                        className="flex items-center px-6 py-3 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 disabled:opacity-50 text-lg"
                       >
-                        {option}
-                      </li>
-                    );
-                  })}
-                </ul>
-                {feedbackMessage && (
-                  <p
-                    className={`text-lg font-semibold mt-3 ${
-                      isCorrect ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
-                    }`}
-                  >
-                    {feedbackMessage}
-                  </p>
-                )}
-                <div className="flex justify-between items-center mt-4">
-                  <button
-                    onClick={prevQuiz}
-                    disabled={currentIndex === 0}
-                    className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 disabled:opacity-50"
-                  >
-                    <ChevronLeft size={18} />
-                  </button>
-                  <button
-                    onClick={nextQuiz}
-                    disabled={currentIndex === quizzes.length - 1}
-                    className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 disabled:opacity-50"
-                  >
-                    <ChevronRight size={18} />
-                  </button>
+                        <ChevronLeft size={24} className="mr-2" />
+                        Previous
+                      </button>
+                      
+                      {currentIndex === quizzes.length - 1 ? (
+                        <button
+                          onClick={handleSubmit}
+                          className="px-8 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors text-lg"
+                        >
+                          Submit
+                        </button>
+                      ) : (
+                        <button
+                          onClick={nextQuiz}
+                          disabled={currentIndex === quizzes.length - 1}
+                          className="flex items-center px-6 py-3 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 disabled:opacity-50 text-lg"
+                        >
+                          Next
+                          <ChevronRight size={24} className="ml-2" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </div>
-                {currentIndex === quizzes.length - 1 && (
-                  <button
-                    onClick={handleSubmit}
-                    className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors"
-                  >
-                    Submit
-                  </button>
-                )}
               </div>
             ) : (
-              <p className="text-center text-gray-500 dark:text-gray-400">No quizzes available for this day and instrument.</p>
+              <div className="flex items-center justify-center h-full">
+                <p className="text-xl text-center text-gray-500 dark:text-gray-400 py-16">
+                  No quizzes available for this day and instrument.
+                </p>
+              </div>
             )}
           </div>
         </main>

@@ -112,7 +112,7 @@ export default function Profile() {
             toast.success("Profile updated successfully!", {
                 position: "top-right",
                 autoClose: 500,
-                onClose: () => navigate("/dashboard") // Redirect to /dashboard after toast closes
+                onClose: () => navigate("/dashboard")
             });
             setUser((prevUser) => ({
                 ...prevUser,
@@ -134,7 +134,7 @@ export default function Profile() {
             <Sidebar />
             <main className="flex-1 p-6 flex flex-col items-center">
                 <div className="bg-white bg-opacity-60 backdrop-blur-lg dark:bg-gray-800 dark:bg-opacity-80 rounded-3xl shadow-lg p-8 w-full max-w-3xl mt-6 h-auto">
-                    <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 text-center">Profile</h2>
+                    <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 text-center mb-8">Profile</h2>
 
                     {loading ? (
                         <p className="mt-4 text-gray-600 dark:text-gray-400 text-center">Loading...</p>
@@ -142,7 +142,7 @@ export default function Profile() {
                         <p className="mt-4 text-red-500 dark:text-red-400 text-center">{error}</p>
                     ) : (
                         <>
-                            <div className="relative mt-4 flex justify-center">
+                            <div className="relative flex justify-center mb-8">
                                 <div
                                     onClick={() => document.getElementById("fileInput").click()}
                                     className="w-32 h-32 rounded-full border-4 border-blue-500 dark:border-blue-600 cursor-pointer overflow-hidden"
@@ -160,52 +160,57 @@ export default function Profile() {
                                 <input id="fileInput" type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
                             </div>
 
-                            <form onSubmit={handleUpdate} className="w-full flex flex-col gap-4 mt-4">
-                                <div>
-                                    <label className="text-gray-700 dark:text-gray-300 font-semibold">Name</label>
+                            <form onSubmit={handleUpdate} className="w-full flex flex-col gap-6">
+                                <div className="space-y-2">
+                                    <label className="block text-gray-700 dark:text-gray-300 font-semibold">Name</label>
                                     <input
                                         type="text"
-                                        className="w-full p-2 rounded-lg bg-gray-200 dark:bg-gray-700 bg-opacity-70 dark:text-gray-200"
+                                        className="w-full p-3 rounded-lg bg-gray-200 dark:bg-gray-700 bg-opacity-70 dark:text-gray-200 text-left"
                                         value={user.name}
                                         onChange={(e) => setUser((prevUser) => ({ ...prevUser, name: e.target.value }))}
                                         required
                                     />
                                 </div>
 
-                                <div>
-                                    <label className="text-gray-700 dark:text-gray-300 font-semibold">Email</label>
+                                <div className="space-y-2">
+                                    <label className="block text-gray-700 dark:text-gray-300 font-semibold">Email</label>
                                     <input
                                         type="email"
-                                        className="w-full p-2 rounded-lg bg-gray-200 dark:bg-gray-700 bg-opacity-70 dark:text-gray-200"
+                                        className="w-full p-3 rounded-lg bg-gray-200 dark:bg-gray-700 bg-opacity-70 dark:text-gray-200 text-left"
                                         value={user.email}
                                         onChange={(e) => setUser((prevUser) => ({ ...prevUser, email: e.target.value }))}
                                         required
                                     />
                                 </div>
 
-                                <div>
-                                    <label className="text-gray-700 dark:text-gray-300 font-semibold">New Password</label>
+                                <div className="space-y-2">
+                                    <label className="block text-gray-700 dark:text-gray-300 font-semibold">New Password</label>
                                     <input
                                         type="password"
-                                        className="w-full p-2 rounded-lg bg-gray-200 dark:bg-gray-700 bg-opacity-70 dark:text-gray-200"
+                                        className="w-full p-3 rounded-lg bg-gray-200 dark:bg-gray-700 bg-opacity-70 dark:text-gray-200 text-left"
                                         value={newPassword}
                                         onChange={(e) => setNewPassword(e.target.value)}
                                     />
                                 </div>
 
-                                <div>
-                                    <label className="text-gray-700 dark:text-gray-300 font-semibold">Confirm New Password</label>
+                                <div className="space-y-2">
+                                    <label className="block text-gray-700 dark:text-gray-300 font-semibold">Confirm New Password</label>
                                     <input
                                         type="password"
-                                        className="w-full p-2 rounded-lg bg-gray-200 dark:bg-gray-700 bg-opacity-70 dark:text-gray-200"
+                                        className="w-full p-3 rounded-lg bg-gray-200 dark:bg-gray-700 bg-opacity-70 dark:text-gray-200 text-left"
                                         value={confirmPassword}
                                         onChange={(e) => setConfirmPassword(e.target.value)}
                                     />
                                 </div>
 
-                                <button type="submit" className="py-2 px-4 rounded text-white bg-blue-500 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-800 shadow-md">
-                                    Update Profile
-                                </button>
+                                <div className="flex justify-center mt-6">
+                                    <button 
+                                        type="submit" 
+                                        className="w-48 py-3 px-6 rounded-lg text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 dark:from-blue-600 dark:to-blue-700 dark:hover:from-blue-700 dark:hover:to-blue-800 shadow-md transition-all duration-300 font-semibold"
+                                    >
+                                        Update Profile
+                                    </button>
+                                </div>
                             </form>
                         </>
                     )}
