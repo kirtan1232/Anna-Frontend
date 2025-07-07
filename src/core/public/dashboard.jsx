@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { useUser, useAuth, SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
 import Footer from "../../components/footer.jsx";
 import Sidebar from "../../components/sidebar.jsx";
 import { useTheme } from "../../components/ThemeContext";
@@ -9,27 +8,69 @@ import { useTheme } from "../../components/ThemeContext";
 export default function Dashboard() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const { user, isLoaded } = useUser();
-  const { isSignedIn } = useAuth();
+  const [userProfile, setUserProfile] = useState(null);
   const { theme } = useTheme();
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [isAuthenticatedLocal, setIsAuthenticatedLocal] = useState(
+    !!localStorage.getItem("token")
+  );
 
   const toggleLanguage = () => {
     const newLang = i18n.language === "en" ? "ne" : "en";
     i18n.changeLanguage(newLang);
   };
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const fetchUserProfile = async () => {
+      if (!token) {
+        setUserProfile(null);
+        setIsAuthenticatedLocal(false);
+        return;
+      }
+      try {
+        const response = await fetch("http://localhost:3000/api/auth/profile", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(t("Error") + ": Failed to fetch profile");
+        }
+
+        const data = await response.json();
+        setUserProfile(data);
+        setIsAuthenticatedLocal(true);
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+        setUserProfile(null);
+        setIsAuthenticatedLocal(false);
+        localStorage.removeItem("token"); // Clear invalid token
+      }
+    };
+
+    fetchUserProfile();
+  }, [t]);
+
   const handleNavigation = (path) => {
-    if (!isSignedIn) {
-      navigate("/login");
+    if (!localStorage.getItem("token")) {
+      setShowLoginPrompt(true);
     } else {
       navigate(path);
     }
   };
 
-  // Wait for user data to load
-  if (!isLoaded) {
-    return <div className="min-h-screen flex items-center justify-center text-gray-700 dark:text-gray-200">{t("Loading")}...</div>;
-  }
+  const handleLoginConfirm = () => {
+    setShowLoginPrompt(false);
+    navigate("/login");
+  };
+
+  const handleLoginCancel = () => {
+    setShowLoginPrompt(false);
+  };
 
   return (
     <div
@@ -43,34 +84,24 @@ export default function Dashboard() {
           <div className="bg-white bg-opacity-60 backdrop-blur-lg dark:bg-gray-800 dark:bg-opacity-80 rounded-3xl shadow-lg p-8 w-full max-w-7xl h-[85vh]">
             <header className="mb-6 flex items-center justify-between space-x-4">
               <div className="flex items-center space-x-4">
-                <SignedIn>
-                  <UserButton
-                    appearance={{
-                      elements: {
-                        userButtonAvatarBox: "w-12 h-12 border border-gray-300 dark:border-gray-600 cursor-pointer",
-                        userButtonPopoverCard: "bg-white dark:bg-gray-800",
-                        userButtonPopoverActionButton: "text-gray-700 dark:text-gray-200 hover:bg-blue-100 dark:hover:bg-blue-900",
-                      },
-                    }}
-                    userProfileUrl="/profile"
+                {userProfile && userProfile.profilePicture ? (
+                  <img
+                    src={`http://localhost:3000/${userProfile.profilePicture}`}
+                    alt="Profile"
+                    className="w-16 h-16 rounded-full border border-gray-300 dark:border-gray-600 cursor-pointer"
+                    onClick={() => handleNavigation("/profile")}
                   />
-                  <h1 className="text-3xl font-bold text-gray-700 dark:text-gray-200">
-                    {t("Hello")}, {user ? user.firstName || t("User") : t("User")}
-                  </h1>
-                </SignedIn>
-                <SignedOut>
-                  <SignInButton mode="modal">
-                    <button
-                      className="w-12 h-12 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center bg-gray-200 dark:bg-gray-700 cursor-pointer"
-                      onClick={() => navigate("/login")}
-                    >
-                      <span className="material-icons-outlined text-gray-700 dark:text-gray-200">person</span>
-                    </button>
-                  </SignInButton>
-                  <h1 className="text-3xl font-bold text-gray-700 dark:text-gray-200">
-                    {t("Hello")}, {t("User")}
-                  </h1>
-                </SignedOut>
+                ) : (
+                  <img
+                    src="src/assets/images/profile.png"
+                    alt="Profile"
+                    className="w-12 h-12 rounded-full border border-gray-300 dark:border-gray-600 cursor-pointer"
+                    onClick={() => handleNavigation("/profile")}
+                  />
+                )}
+                <h1 className="text-3xl font-bold text-gray-700 dark:text-gray-200">
+                  {t("Hello")}, {userProfile ? userProfile.name : t("User")}
+                </h1>
               </div>
               <button
                 onClick={toggleLanguage}
@@ -152,6 +183,29 @@ export default function Dashboard() {
         </main>
       </div>
       <Footer />
+      {showLoginPrompt && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-sm">
+            <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4">
+              {t("Please log in to continue")}
+            </h3>
+            <div className="flex justify-center space-x-4">
+              <button
+                className="py-2 px-4 bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded hover:bg-gray-400 dark:hover:bg-gray-500"
+                onClick={handleLoginCancel}
+              >
+                {t("Cancel")}
+              </button>
+              <button
+                className="py-2 px-4 bg-gradient-to-r from-[#99CCFF] via-[#C6B7FE] to-[#766E98] text-white rounded hover:opacity-90"
+                onClick={handleLoginConfirm}
+              >
+                {t("Sign Up")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
