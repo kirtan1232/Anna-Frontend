@@ -304,7 +304,7 @@ export default function LessonDetails() {
             />
           ) : (
             <img
-              src="src/assets/images/profile.png"
+              src="/public/profile.png"
               alt="Profile"
               className="w-16 h-16 rounded-full border border-gray-300 dark:border-gray-600 cursor-pointer"
               onClick={() => navigate("/profile")}
