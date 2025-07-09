@@ -60,6 +60,12 @@ export default function ChordAndLyric() {
                 });
 
                 if (!response.ok) {
+                    if (response.status === 404) {
+                        // No liked songs, which is fine for new users
+                        console.log("No liked songs found for this user.");
+                        setLikedSongs([]);
+                        return;
+                    }
                     throw new Error("Failed to fetch liked songs");
                 }
 
