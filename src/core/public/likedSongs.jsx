@@ -31,7 +31,10 @@ export default function LikedSongs() {
             const data = await response.json();
             setLikedSongs(data.songIds);
         } catch (error) {
-           
+            toast.error("Error fetching liked songs: " + error.message, {
+                position: "top-right",
+                autoClose: 3000,
+            });
         }
     };
 
@@ -98,7 +101,7 @@ export default function LikedSongs() {
     };
 
     return (
-        <div className={`min-h-screen flex flex-col ${theme === 'light' ? 'bg-gradient-to-br from-purple-100 to-blue-100' : 'bg-gradient-to-br from-gray-900 to-gray-800'}`}>
+        <div className={`min-h-screen flex flex-col ${theme === 'light' ? 'bg-gradient-to-br from-purple-100 via-blue-100 to-pink-100' : 'bg-gradient-to-br from-gray-900 via-purple-900 to-gray-800'}`}>
             <div className="relative flex flex-1">
                 <Sidebar />
                 <main className="flex-1 p-6 flex justify-center items-start mt-4">
