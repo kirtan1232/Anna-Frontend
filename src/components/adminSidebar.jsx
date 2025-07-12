@@ -65,9 +65,10 @@ const AdminSidebar = () => {
 
     return (
         <div className={`min-h-screen flex ${i18n.language === 'ne' ? 'font-noto-sans' : ''}`}>
-            <aside className={`bg-white dark:bg-gray-800 shadow-lg rounded-lg ml-4 mt-6 mb-7 relative transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-64'}`}>
+            <aside className={`bg-white dark:bg-gray-800 shadow-lg rounded-3xl ml-4 mt-6 mb-7 relative transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-64'}`}>
                 <div className="relative p-4">
-                    <div className="flex justify-center mb-2">
+                    
+                    <div className="flex justify-start mb-2">
                         <button
                             onClick={toggleSidebar}
                             className="text-gray-700 dark:text-gray-200 hover:text-blue-500 dark:hover:text-blue-400"
@@ -185,23 +186,28 @@ const AdminSidebar = () => {
 
             {showLogoutConfirm && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-sm">
-                        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4">
-                            {t('Are you sure you want to logout?')}
-                        </h3>
-                        <div className="flex justify-center space-x-4">
-                            <button
-                                className="py-2 px-4 bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded hover:bg-gray-400 dark:hover:bg-gray-500"
-                                onClick={handleCancelLogout}
-                            >
-                                {t('Cancel')}
-                            </button>
-                            <button
-                                className="py-2 px-4 bg-gradient-to-r from-[#99CCFF] via-[#C6B7FE] to-[#766E98] text-white rounded hover:opacity-90"
-                                onClick={handleConfirmLogout}
-                            >
-                                {t('Logout')}
-                            </button>
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 w-full max-w-sm mx-4 shadow-2xl">
+                        <div className="text-center">
+                            <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                                {t('Log out')}
+                            </h3>
+                            <p className="text-gray-600 dark:text-gray-400 mb-8 text-sm">
+                                {t('Are you sure you want to log out?')}
+                            </p>
+                            <div className="space-y-3">
+                                <button
+                                    className="w-full py-3 px-4 bg-blue-600 text-white rounded-full font-medium hover:bg-blue-800 transition duration-200"
+                                    onClick={handleConfirmLogout}
+                                >
+                                    {t('Log out')}
+                                </button>
+                                <button
+                                    className="w-full py-3 px-4 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition duration-200"
+                                    onClick={handleCancelLogout}
+                                >
+                                    {t('Cancel')}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
