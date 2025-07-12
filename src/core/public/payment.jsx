@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FaCoffee } from "react-icons/fa"; // For the coffee cup icon
+import { FaCoffee, FaHeart, FaMusic, FaGuitar } from "react-icons/fa"; // For the coffee cup icon
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -130,154 +130,163 @@ const SupportPayment = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-purple-100 to-blue-100 dark:from-gray-900 dark:to-gray-800">
+    <div className={`flex flex-col min-h-screen ${theme === "light" ? "bg-gradient-to-br from-purple-100 via-blue-100 to-pink-100" : "bg-gradient-to-br from-gray-900 via-purple-900 to-gray-800"}`}>
       <div className="flex flex-1">
         <Sidebar />
         <main className="flex-1 p-6 flex justify-center items-center mt-6">
-          <div className="bg-white bg-opacity-60 backdrop-blur-lg dark:bg-gray-800 dark:bg-opacity-80 rounded-3xl shadow-lg p-8 w-full max-w-6xl">
-            <header className="mb-6 flex items-center space-x-4">
+          <div className="bg-white bg-opacity-60 backdrop-blur-lg dark:bg-gray-800 dark:bg-opacity-80 rounded-3xl shadow-2xl p-8 w-full max-w-6xl border border-white/20 dark:border-gray-700/30">
+            {/* Header with enhanced styling */}
+            <header className="mb-8 flex items-center space-x-4 animate-fade-in">
               {userProfile && userProfile.profilePicture ? (
                 <img
                   src={`http://localhost:3000/${userProfile.profilePicture}`}
                   alt="Profile"
-                  className="w-16 h-16 rounded-full border border-gray-300 dark:border-gray-600 cursor-pointer"
+                  className="w-16 h-16 rounded-full border-2 border-gradient-to-r from-purple-400 to-blue-400 dark:border-gray-600 cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                   onClick={() => navigate("/profile")}
                 />
               ) : (
                 <img
                   src="src/assets/images/profile.png"
                   alt="Profile"
-                  className="w-12 h-12 rounded-full border border-gray-300 dark:border-gray-600 cursor-pointer"
+                  className="w-16 h-16 rounded-full border-2 border-gradient-to-r from-purple-400 to-blue-400 dark:border-gray-600 cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                   onClick={() => navigate("/profile")}
                 />
               )}
-              <h1 className="text-3xl font-bold text-gray-700 dark:text-gray-200">
-                Hello, {userProfile ? userProfile.name : "User"}
-              </h1>
+              <div>
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-blue-400">
+                  Hello, {userProfile ? userProfile.name : "User"}
+                </h1>
+                <p className="text-gray-600 dark:text-gray-300 mt-1">Support Anna's musical journey</p>
+              </div>
             </header>
 
             <div className="mt-8 flex justify-center">
-              <div className="w-full max-w-3xl bg-white rounded-lg shadow-lg dark:bg-gray-800 p-6 flex">
-                {/* Left Section - About */}
-                <div className="w-1/2 pr-4">
-                  <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4">
-                    About Anna
-                  </h2>
-                  <p className="text-gray-600 dark:text-gray-300 mb-4">
-                    I'm dedicated to making music more accessible for musicians
-                    by uncovering the perfect chord progressions for your
-                    favorite songs. Whether it's finding the chords to a classic
-                    hit or a new release, I work hard to bring you the most
-                    accurate and easy-to-follow chords paired with lyrics.
-                  </p>
-                  <p className="text-gray-600 dark:text-gray-300 mb-4">
-                    I also offer a special song request feature, where you can
-                    ask for your favorite song's chords, and I'll do my best to
-                    post it for you. Your support on Anna helps me keep this
-                    project going, ensuring I can continue creating valuable
-                    content and fulfilling song requests.
-                  </p>
-                  <p className="text-gray-600 dark:text-gray-300">
-                    Thank you for being part of this musical journey! Together,
-                    we'll make every song a little easier to play, one chord at
-                    a time.
-                  </p>
-                  <div className="mt-4 flex space-x-2">
-                    <a
-                      href="https://www.facebook.com/buymeacoffee"
-                      className="text-blue-500 dark:text-blue-300 hover:underline"
-                    >
-                      Facebook
-                    </a>
-                    <a
-                      href="https://www.instagram.com/buymeacoffee"
-                      className="text-blue-500 dark:text-blue-300 hover:underline"
-                    >
-                      Instagram
-                    </a>
+              <div className="w-full max-w-5xl bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl dark:bg-gray-800/90 overflow-hidden border border-white/20 dark:border-gray-700/30">
+                <div className="flex flex-col lg:flex-row">
+                  {/* Left Section - About with enhanced styling */}
+                  <div className="lg:w-1/2 p-8 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-800 dark:to-purple-900/30">
+                    <div className="flex items-center mb-6">
+                      <FaMusic className="text-purple-500 text-2xl mr-3" />
+                      <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+                        About Anna
+                      </h2>
+                    </div>
+                    
+                    <div className="space-y-4 text-gray-700 dark:text-gray-300">
+                      <div className="flex items-start space-x-3">
+                        <FaGuitar className="text-purple-500 mt-1 flex-shrink-0" />
+                        <p>
+                          I'm dedicated to making music more accessible for musicians
+                          by uncovering the perfect chord progressions for your
+                          favorite songs. Whether it's finding the chords to a classic
+                          hit or a new release, I work hard to bring you the most
+                          accurate and easy-to-follow chords paired with lyrics.
+                        </p>
+                      </div>
+                      
+                      <div className="flex items-start space-x-3">
+                        <FaHeart className="text-red-500 mt-1 flex-shrink-0" />
+                        <p>
+                          I also offer a special song request feature, where you can
+                          ask for your favorite song's chords, and I'll do my best to
+                          post it for you. Your support on Anna helps me keep this
+                          project going, ensuring I can continue creating valuable
+                          content and fulfilling song requests.
+                        </p>
+                      </div>
+                      
+                      <div className="bg-white/50 dark:bg-gray-700/50 rounded-lg p-4 border-l-4 border-purple-500">
+                        <p className="italic">
+                          "Thank you for being part of this musical journey! Together,
+                          we'll make every song a little easier to play, one chord at
+                          a time."
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-6 flex space-x-4">
+                      <a
+                        href="https://www.facebook.com/buymeacoffee"
+                        className="flex items-center space-x-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg"
+                      >
+                        <span>Facebook</span>
+                      </a>
+                      <a
+                        href="https://www.instagram.com/buymeacoffee"
+                        className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg"
+                      >
+                        <span>Instagram</span>
+                      </a>
+                    </div>
                   </div>
-                </div>
 
-                {/* Right Section - Payment Form */}
-                <div className="w-1/2 pl-4 bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                  <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4">
-                    Support Anna a coffee ☕
-                  </h2>
-                  <div className="flex items-center justify-center mb-4">
-                    <FaCoffee className="text-2xl text-brown-600 mr-2" />
-                    <span className="text-gray-600 dark:text-gray-400">x</span>
-                    <button
-                      type="button"
-                      onClick={() => setAmount(10)}
-                      className={`ml-2 px-3 py-1 rounded-full ${
-                        amount === 10
-                          ? "bg-blue-500 text-white"
-                          : "bg-gray-200 dark:bg-gray-600"
-                      }`}
-                    >
-                      10
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setAmount(20)}
-                      className={`ml-2 px-3 py-1 rounded-full ${
-                        amount === 20
-                          ? "bg-blue-500 text-white"
-                          : "bg-gray-200 dark:bg-gray-600"
-                      }`}
-                    >
-                      20
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setAmount(30)}
-                      className={`ml-2 px-3 py-1 rounded-full ${
-                        amount === 30
-                          ? "bg-blue-500 text-white"
-                          : "bg-gray-200 dark:bg-gray-600"
-                      }`}
-                    >
-                      30
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setAmount(50)}
-                      className={`ml-2 px-3 py-1 rounded-full ${
-                        amount === 50
-                          ? "bg-blue-500 text-white"
-                          : "bg-gray-200 dark:bg-gray-600"
-                      }`}
-                    >
-                      50
-                    </button>
+                  {/* Right Section - Payment Form with enhanced styling */}
+                  <div className="lg:w-1/2 p-8 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-700 dark:to-purple-900/30">
+                    <div className="flex items-center justify-center mb-6">
+                      <FaCoffee className="text-4xl text-amber-600 mr-3 animate-pulse" />
+                      <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+                        Buy Anna a Coffee
+                      </h2>
+                    </div>
+                    
+                    {/* Amount Selection with enhanced styling */}
+                    <div className="mb-6">
+                      <div className="flex items-center justify-center mb-4">
+                        <FaCoffee className="text-2xl text-amber-600 mr-2" />
+                        <span className="text-gray-600 dark:text-gray-400 text-lg">×</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        {[10, 20, 30, 50].map((value) => (
+                          <button
+                            key={value}
+                            type="button"
+                            onClick={() => setAmount(value)}
+                            className={`px-4 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 ${
+                              amount === value
+                                ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow-lg"
+                                : "bg-white/70 dark:bg-gray-600/70 text-gray-700 dark:text-gray-200 hover:bg-white dark:hover:bg-gray-600 shadow-md"
+                            }`}
+                          >
+                            Rs. {value}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <form onSubmit={handleDonationSubmit} className="space-y-4">
+                      <div>
+                        <input
+                          type="text"
+                          value={nameOrSocial}
+                          onChange={(e) => setNameOrSocial(e.target.value)}
+                          placeholder="Name or @yoursocial"
+                          className="w-full p-4 border border-gray-200 dark:border-gray-600 rounded-xl bg-white/80 dark:bg-gray-600/80 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 backdrop-blur-sm"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <textarea
+                          value={message}
+                          onChange={(e) => setMessage(e.target.value)}
+                          placeholder="Say something nice... 💝"
+                          rows="3"
+                          className="w-full p-4 border border-gray-200 dark:border-gray-600 rounded-xl bg-white/80 dark:bg-gray-600/80 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 backdrop-blur-sm resize-none"
+                        />
+                      </div>
+                      <button
+                        type="submit"
+                        className="w-full py-4 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
+                      >
+                        <FaCoffee className="text-lg" />
+                        <span>Support Rs. {amount}</span>
+                        <FaHeart className="text-lg text-red-300" />
+                      </button>
+                    </form>
+                    
+                    <div className="mt-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                      <p>🔒 Secure payment via eSewa</p>
+                    </div>
                   </div>
-                  <form onSubmit={handleDonationSubmit} className="space-y-4">
-                    <div>
-                      <input
-                        type="text"
-                        value={nameOrSocial}
-                        onChange={(e) => setNameOrSocial(e.target.value)}
-                        placeholder="Name or @yoursocial"
-                        className="w-full p-2 border rounded bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-200 focus:outline-none"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <input
-                        type="text"
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                        placeholder="Say something nice..."
-                        className="w-full p-2 border rounded bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-200 focus:outline-none"
-                      />
-                    </div>
-                    <button
-                      type="submit"
-                      className="w-full py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors"
-                    >
-                      Support Rs.{amount}
-                    </button>
-                  </form>
                 </div>
               </div>
             </div>
@@ -285,6 +294,24 @@ const SupportPayment = () => {
         </main>
       </div>
       <Footer />
+      
+      {/* Add custom styles for animations */}
+      <style jsx>{`
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        .animate-fade-in {
+          animation: fade-in 0.6s ease-out;
+        }
+      `}</style>
     </div>
   );
 };
