@@ -131,7 +131,7 @@ const SongDetails = () => {
                             )}
                         </div>
                         <h2 className="text-xl font-semibold mt-4 text-gray-800 dark:text-gray-200">Lyrics:</h2>
-                        <div ref={lyricsRef} className="flex-1 overflow-y-auto p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                        <div ref={lyricsRef} className="flex-1 overflow-y-auto p-2 bg-gray-100 dark:bg-gray-700 rounded-lg custom-scrollbar">
                             {song.lyrics && song.lyrics.length > 0 ? (
                                 song.lyrics.map((lyric, index) => (
                                     <div key={index} className="mt-2">
@@ -151,34 +151,56 @@ const SongDetails = () => {
                                 <p className="text-gray-600 dark:text-gray-400">No lyrics available.</p>
                             )}
                         </div>
-                        <div className="flex justify-between items-center mt-3 bg-white dark:bg-gray-800 p-1 rounded-lg shadow-md w-full">
+                        <div className="flex justify-between items-center mt-3 bg-gradient-to-r from-white/90 to-gray-50/90 dark:from-gray-800/90 dark:to-gray-900/90 backdrop-blur-sm p-4 rounded-lg shadow-md w-full animate-fadeInUp animation-delay-300">
                             <div className="flex items-center space-x-4 flex-1 justify-center">
-                                <button onClick={() => setFontSize(fontSize - 1)}
-                                        className="bg-gray-200 dark:bg-gray-600 px-3 py-2 rounded-md text-gray-800 dark:text-gray-200">-1
+                                <button 
+                                    onClick={() => setFontSize(fontSize - 1)}
+                                    className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-3 py-2 rounded-md font-medium shadow-lg transform hover:scale-105 active:scale-95 transition-all duration-200"
+                                >
+                                    - Font
                                 </button>
-                                <span className="text-gray-700 dark:text-gray-300">{fontSize}px</span>
-                                <button onClick={() => setFontSize(fontSize + 1)}
-                                        className="bg-gray-200 dark:bg-gray-600 px-3 py-2 rounded-md text-gray-800 dark:text-gray-200">+1
+                                <span className="text-gray-700 dark:text-gray-300 font-bold min-w-[60px] text-center bg-white/50 dark:bg-gray-800/50 px-3 py-1 rounded-lg">
+                                    {fontSize}px
+                                </span>
+                                <button 
+                                    onClick={() => setFontSize(fontSize + 1)}
+                                    className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-3 py-2 rounded-md font-medium shadow-lg transform hover:scale-105 active:scale-95 transition-all duration-200"
+                                >
+                                    + Font
                                 </button>
                             </div>
                             <div className="flex-1 flex justify-center">
                                 <button
                                     onClick={() => setAutoScroll(!autoScroll)}
-                                    className={`px-4 py-2 rounded-md text-white ${autoScroll ? "bg-red-500 dark:bg-red-600" : "bg-blue-400 dark:bg-blue-600"}`}
+                                    className={`px-4 py-2 rounded-md font-medium transition-all duration-300 shadow-lg transform hover:scale-105 active:scale-95 ${
+                                        autoScroll 
+                                            ? "bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white" 
+                                            : "bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white"
+                                    }`}
                                 >
-                                    {autoScroll ? "Stop Scroll" : "Auto Scroll"}
+                                    {autoScroll ? (
+                                        <span className="flex items-center">
+                                            <span className="w-2 h-2 bg-white rounded-full mr-2 animate-pulse"></span>
+                                            Stop Scroll
+                                        </span>
+                                    ) : (
+                                        "Auto Scroll"
+                                    )}
                                 </button>
                             </div>
                             <div className="flex items-center space-x-3 flex-1 justify-center">
-                                <span className="text-gray-700 dark:text-gray-300">Speed:</span>
+                                <span className="text-gray-700 dark:text-gray-300 font-medium">Speed:</span>
                                 <input
                                     type="range"
                                     min="1"
                                     max="10"
                                     value={scrollSpeed}
                                     onChange={(e) => setScrollSpeed(Number(e.target.value))}
-                                    className="cursor-pointer"
+                                    className="cursor-pointer w-24 h-2 bg-gradient-to-r from-purple-200 to-pink-200 rounded-lg appearance-none slider"
                                 />
+                                <span className="text-sm text-gray-700 dark:text-gray-300 font-bold min-w-[20px] text-center bg-white/50 dark:bg-gray-800/50 px-2 py-1 rounded">
+                                    {scrollSpeed}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -193,7 +215,7 @@ const SongDetails = () => {
                         />
                     ) : (
                         <img
-                            src="/public/profile.png"
+                            src="/profile.png"
                             alt="Profile"
                             className="w-16 h-16 rounded-full border border-gray-300 dark:border-gray-600 cursor-pointer"
                             onClick={() => navigate("/profile")}
@@ -202,6 +224,71 @@ const SongDetails = () => {
                 </div>
             </div>
             <Footer />
+
+            <style jsx>{`
+                @keyframes fadeInUp {
+                    from {
+                        opacity: 0;
+                        transform: translateY(10px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                .animate-fadeInUp {
+                    animation: fadeInUp 0.6s ease-out forwards;
+                }
+
+                .animation-delay-300 {
+                    animation-delay: 300ms;
+                }
+
+                .custom-scrollbar::-webkit-scrollbar {
+                    width: 8px;
+                }
+
+                .custom-scrollbar::-webkit-scrollbar-track {
+                    background: rgba(0, 0, 0, 0.1);
+                    border-radius: 4px;
+                }
+
+                .custom-scrollbar::-webkit-scrollbar-thumb {
+                    background: linear-gradient(to bottom, #8B5CF6, #EC4899);
+                    border-radius: 4px;
+                }
+
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: linear-gradient(to bottom, #7C3AED, #DB2777);
+                }
+
+                .slider::-webkit-slider-thumb {
+                    appearance: none;
+                    width: 18px;
+                    height: 18px;
+                    background: linear-gradient(to right, #8B5CF6, #EC4899);
+                    border-radius: 50%;
+                    cursor: pointer;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+                    transition: all 0.3s ease;
+                }
+
+                .slider::-webkit-slider-thumb:hover {
+                    transform: scale(1.1);
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+                }
+
+                .slider::-moz-range-thumb {
+                    width: 18px;
+                    height: 18px;
+                    background: linear-gradient(to right, #8B5CF6, #EC4899);
+                    border-radius: 50%;
+                    cursor: pointer;
+                    border: none;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+                }
+            `}</style>
         </div>
     );
 };
