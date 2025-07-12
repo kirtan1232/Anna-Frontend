@@ -1,26 +1,24 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useState, useEffect, useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faLock, faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faLock, faEnvelope, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import logoImage from "../../assets/images/logo.png";
 
 const RegisterPage = () => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [loading, setLoading] = useState(false);
-
     const navigate = useNavigate();
 
-    // Check if the user is already authenticated on component mount
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (token) {
-            // If a token exists, redirect to dashboard
             navigate("/dashboard");
         }
     }, [navigate]);
@@ -28,7 +26,6 @@ const RegisterPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Basic validation
         if (!name || !email || !password || !confirmPassword) {
             toast.error("All fields are required!", {
                 position: "top-right",
@@ -37,7 +34,15 @@ const RegisterPage = () => {
             return;
         }
 
-        // Password and confirm password validation
+        // Password length validation
+        if (password.length < 8) {
+            toast.error("Password must be at least 8 characters long!", {
+                position: "top-right",
+                autoClose: 3000,
+            });
+            return;
+        }
+
         if (password !== confirmPassword) {
             toast.error("Passwords do not match!", {
                 position: "top-right",
@@ -46,142 +51,225 @@ const RegisterPage = () => {
             return;
         }
 
-        setLoading(true); // Set loading state
+        setLoading(true);
 
         try {
-            // Send POST request to the backend
             const response = await axios.post("http://localhost:3000/api/auth/register", {
                 name,
                 email,
                 password,
-                role: "user", // Default role is 'user'
+                role: "user",
             });
 
-            // If successful, display success message and navigate to login
             if (response.status === 201) {
                 toast.success("User registered successfully!", {
                     position: "top-right",
                     autoClose: 1500,
                 });
-                navigate("/login"); // Navigate immediately
+                navigate("/login");
             }
         } catch (err) {
-            // Handle error response from backend
             const message = err.response?.data?.message || "Error registering user. Please try again.";
             toast.error(message, {
                 position: "top-right",
                 autoClose: 3000,
             });
         } finally {
-            setLoading(false); // Stop loading state
+            setLoading(false);
         }
     };
 
     const handleSignInClick = () => {
-        const token = localStorage.getItem("token");
-        if (token) {
-            // If a token exists, navigate to dashboard
-            navigate("/dashboard");
-        } else {
-            // Otherwise, navigate to login
-            navigate("/login");
-        }
+        navigate("/login");
     };
 
+    const bubbles = useMemo(() => {
+        const bubbleCount = 15;
+        return Array.from({ length: bubbleCount }).map((_, i) => ({
+            id: i,
+            size: Math.random() * 60 + 20,
+            left: Math.random() * 100,
+            top: Math.random() * 100,
+            opacity: Math.random() * 0.3 + 0.1,
+            duration: Math.random() * 10 + 10,
+            delay: Math.random() * 5
+        }));
+    }, []);
+
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 to-blue-100 dark:from-gray-900 dark:to-gray-800">
-            {/* Content */}
-            <div className="relative bg-white bg-opacity-90 rounded-3xl shadow-md flex w-full max-w-5xl h-[490px] overflow-hidden z-20">
-                {/* Left Section - Sign In Prompt */}
-                <div
-                    className="w-[40%] bg-gradient-to-r from-[#99CCFF] via-[#C6B7FE] to-[#766E98] text-white rounded-l-3xl flex flex-col items-center justify-center p-6"
-                >
-                    <img
-                        src={logoImage}
-                        alt="Anna Logo"
-                        className="w-32 h-auto mb-6"
+        <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+            {/* Updated Background with stable bubbles */}
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-400 via-pink-300 to-blue-300 opacity-90">
+                {bubbles.map(bubble => (
+                    <div 
+                        key={`bubble-${bubble.id}`}
+                        className="absolute rounded-full bg-white pointer-events-none"
+                        style={{
+                            width: `${bubble.size}px`,
+                            height: `${bubble.size}px`,
+                            left: `${bubble.left}%`,
+                            top: `${bubble.top}%`,
+                            opacity: bubble.opacity,
+                            animation: `float ${bubble.duration}s ease-in-out ${bubble.delay}s infinite`,
+                            willChange: 'transform',
+                        }}
                     />
-                    <button
-                        className="px-6 py-2 border-2 border-white rounded-full text-white text-base font-semibold hover:bg-white hover:text-blue-500 transition-all duration-200 shadow-sm"
-                        onClick={handleSignInClick} // Navigate based on auth state
-                    >
-                        SIGN IN
-                    </button>
+                ))}
+            </div>
+            
+            {/* Registration Container */}
+            <div className="bg-white rounded-3xl shadow-xl overflow-hidden flex w-full max-w-5xl min-h-[550px] relative z-10">
+                {/* Left Section - Registration Form */}
+                <div className="w-1/2 p-12 flex flex-col justify-center">
+                    <div className="max-w-md mx-auto w-full">
+                        <h2 className="text-3xl font-bold text-purple-800 mb-2 text-center">CREATE ACCOUNT</h2>
+                        <p className="text-purple-600 mb-8 text-center">
+                            Hey, Enter your details to create<br />
+                            your account
+                        </p>
+
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            {/* Name Input */}
+                            <div className="relative">
+                                <FontAwesomeIcon 
+                                    icon={faUser} 
+                                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Full Name"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                    required
+                                />
+                            </div>
+
+                            {/* Email Input */}
+                            <div className="relative">
+                                <FontAwesomeIcon 
+                                    icon={faEnvelope} 
+                                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                                />
+                                <input
+                                    type="email"
+                                    placeholder="Enter Email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 foci:border-transparent"
+                                    required
+                                />
+                            </div>
+
+                            {/* Password Input */}
+                            <div className="relative">
+                                <FontAwesomeIcon 
+                                    icon={faLock} 
+                                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                                />
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="Password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="w-full pl-10 pr-12 py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                >
+                                    <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                                </button>
+                            </div>
+
+                            {/* Confirm Password Input */}
+                            <div className="relative">
+                                <FontAwesomeIcon 
+                                    icon={faLock} 
+                                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                                />
+                                <input
+                                    type={showConfirmPassword ? "text" : "password"}
+                                    placeholder="Confirm Password"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    className="w-full pl-10 pr-12 py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                >
+                                    <FontAwesomeIcon icon={showConfirmPassword ? faEyeSlash : faEye} />
+                                </button>
+                            </div>
+
+                            {/* Register Button */}
+                            <div className="flex justify-center">
+                                <button
+                                    type="submit"
+                                    className="bg-purple-600 text-white py-2 px-6 rounded-lg font-medium hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                                    disabled={loading}
+                                >
+                                    {loading ? "Registering..." : "Register Now"}
+                                </button>
+                            </div>
+                        </form>
+
+                        {/* Sign In Link */}
+                        <div className="mt-6 text-center">
+                            <span className="text-gray-600 text-sm">
+                                Already have an account?{" "}
+                                <button
+                                    onClick={handleSignInClick}
+                                    className="text-purple-600 hover:text-purple-800 font-medium cursor-pointer"
+                                >
+                                    Login
+                                </button>
+                            </span>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Right Section - Registration Form */}
-                <div className="w-[62%] p-8 flex flex-col justify-center items-center">
-                    <h2 className="text-[1.8rem] font-bold text-blue-600 mb-12 text-center">Create Account</h2>
-
-                    <form className="space-y-5 w-full flex flex-col items-center" onSubmit={handleSubmit}>
-                        <div className="relative w-[65%]">
-                            <input
-                                type="text"
-                                placeholder="Full Name"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                className="pl-10 py-2 border border-gray-300 rounded-full w-full focus:outline-none focus:ring-2 focus:ring-blue-300"
-                            />
-                            <FontAwesomeIcon
-                                icon={faUser}
-                                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                            />
-                        </div>
-
-                        <div className="relative w-[65%]">
-                            <input
-                                type="email"
-                                placeholder="Email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="pl-10 py-2 border border-gray-300 rounded-full w-full focus:outline-none focus:ring-2 focus:ring-blue-300"
-                            />
-                            <FontAwesomeIcon
-                                icon={faEnvelope}
-                                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                {/* Right Section - Illustration */}
+                <div className="w-1/2 bg-gradient-to-br from-purple-600 via-purple-700 to-blue-800 flex items-center justify-center relative overflow-hidden">
+                    {/* Background decorative elements */}
+                    <div className="absolute inset-0 opacity-20">
+                        <div className="absolute top-10 left-10 w-32 h-32 bg-white rounded-full"></div>
+                        <div className="absolute bottom-20 right-20 w-20 h-20 bg-yellow-300 rounded-full"></div>
+                        <div className="absolute top-1/2 left-1/4 w-8 h-8 bg-pink-300 rounded-full"></div>
+                    </div>
+                    
+                    {/* Logo */}
+                    <div className="relative z-10 text-center">
+                        <div className="bg-white bg-opacity-20 rounded-2xl p-8 mb-4 backdrop-blur-sm">
+                            <img 
+                                src="/logo.PNG" 
+                                alt="Anna Logo" 
+                                className="w-48 h-48 mx-auto object-contain"
                             />
                         </div>
-
-                        <div className="relative w-[65%]">
-                            <input
-                                type="password"
-                                placeholder="Password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="pl-10 py-2 border border-gray-300 rounded-full w-full focus:outline-none focus:ring-2 focus:ring-blue-300"
-                            />
-                            <FontAwesomeIcon
-                                icon={faLock}
-                                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                            />
-                        </div>
-
-                        <div className="relative w-[65%]">
-                            <input
-                                type="password"
-                                placeholder="Confirm Password"
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                className="pl-10 py-2 border border-gray-300 rounded-full w-full focus:outline-none focus:ring-2 focus:ring-blue-300"
-                            />
-                            <FontAwesomeIcon
-                                icon={faLock}
-                                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                            />
-                        </div>
-
-                        <div className="flex justify-center">
-                            <button
-                                type="submit"
-                                className="bg-gradient-to-r from-[#99CCFF] via-[#C6B7FE] to-[#766E98] text-white py-2 px-8 w-[180px] rounded-full font-semibold hover:shadow-md transition-all duration-200"
-                                disabled={loading}
-                            >
-                                {loading ? "Registering..." : "Register Now"}
-                            </button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </div>
+
+            {/* Add the floating animation */}
+            <style jsx>{`
+                @keyframes float {
+                    0% {
+                        transform: translateY(0) translateX(0);
+                    }
+                    50% {
+                        transform: translateY(-100px) translateX(20px);
+                    }
+                    100% {
+                        transform: translateY(0) translateX(0);
+                    }
+                }
+            `}</style>
         </div>
     );
 };
