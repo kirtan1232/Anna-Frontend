@@ -31,10 +31,8 @@ export default function LikedSongs() {
             const data = await response.json();
             setLikedSongs(data.songIds);
         } catch (error) {
-            toast.error("Error fetching liked songs: " + error.message, {
-                position: "top-right",
-                autoClose: 3000,
-            });
+            console.error("Error fetching liked songs:", error);{   
+            };
         }
     };
 
