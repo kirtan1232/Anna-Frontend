@@ -35,16 +35,16 @@ const Footer = () => {
           </div>
           <ul className="flex flex-wrap items-center mb-6 text-lg font-medium text-gray-500 sm:mb-0 dark:text-gray-400">
             <li>
-              <a href="#" className="hover:underline me-4 md:me-6">{t('About')}</a>
+              <a href="/aboutus" className="hover:underline me-4 md:me-6">{t('About Us')}</a>
             </li>
             <li>
-              <a href="#" className="hover:underline me-4 md:me-6">{t('Privacy Policy')}</a>
+              <a href="/privacy" className="hover:underline me-4 md:me-6">{t('Privacy Policy')}</a>
             </li>
             <li>
-              <a href="#" className="hover:underline me-4 md:me-6">{t('Licensing')}</a>
+              <a href="/help" className="hover:underline me-4 md:me-6">{t('FAQ')}</a>
             </li>
             <li>
-              <a href="#" className="hover:underline">{t('Contact')}</a>
+              <a href="/help" className="hover:underline">{t('Support')}</a>
             </li>
           </ul>
         </div>
