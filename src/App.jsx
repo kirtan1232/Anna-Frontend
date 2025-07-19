@@ -24,7 +24,11 @@ import SongDetails from "./core/public/songDetails.jsx";
 import TunerInst from "./core/public/tunerInst.jsx";
 import Success from "./components/success.jsx";
 import Payment from "./core/public/payment.jsx";
+import Help from "./core/public/help.jsx";
+import PrivacyPolicy from "./core/public/privacypolicy.jsx";
+import AboutUs from "./core/public/aboutus.jsx";
 import './i18n.js'; // Import i18n for translations
+import path from "path";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -72,6 +76,9 @@ function App() {
     { path: "/liked-songs", element: <LikedSongs /> },
     { path: "/success", element: <Success /> },
     { path: "/payment", element: <Payment /> },
+    {path: "/help", element: <Help /> },
+    {path: "/privacy", element: <PrivacyPolicy /> },
+    {path: "/aboutus", element: <AboutUs /> },
     { path: "*", element: <>Page not found</> },
   ];
 
